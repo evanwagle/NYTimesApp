@@ -51,13 +51,11 @@ public final class xmlTest {
             if (channel.child(i).label().equals("item")) {
                 // Second for loop to search for description tag
                 for (int j = 0; j < channel.child(i).numberOfChildren(); j++) {
-                    if (channel.child(i).child(j).label()
-                            .equals("description")) {
+                    if (channel.child(i).child(j).label().equals("description")) {
                         XMLTree description = channel.child(i).child(j);
                         // Checks if a description exists
                         if (description.numberOfChildren() > 0) {
-                            articleDescription
-                                    .add(description.child(0).label());
+                            articleDescription.add(description.child(0).label());
                         } else {
                             articleDescription.add("No Description");
                         }
@@ -68,6 +66,41 @@ public final class xmlTest {
             }
         }
         out.println(articleDescription);
+    }
+
+    public static void processThumbnail(SimpleWriter out) {
+
+        String feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml";
+        // Try and catch to see if feed is valid
+        try {
+            XMLTree xml = new XMLTree1(feedURL);
+            ArrayList<String> articleThumbnail = new ArrayList<String>();
+
+            // TODO Could this be simpler with recursion?
+            XMLTree channel = xml.child(0);
+            for (int i = 0; i < channel.numberOfChildren(); i++) {
+                if (channel.child(i).label().equals("item")) {
+                    // Second for loop to search for thumbnail media tag
+                    for (int j = 0; j < channel.child(i).numberOfChildren(); j++) {
+                        if (channel.child(i).child(j).label().equals("media:content")) {
+                            XMLTree mediaContent = channel.child(i).child(j);
+                            // Checks if a thumbnail exists
+                            if (mediaContent.hasAttribute("url")) {
+                                articleThumbnail.add(mediaContent.attributeValue("url"));
+                            } else {
+                                articleThumbnail.add("noImageAvailable.png");
+                            }
+                        }
+
+                    }
+
+                }
+            }
+            out.println(articleThumbnail);
+
+        } catch (Exception e) {
+            out.println("Error: Could not load feed");
+        }
     }
 
     /**
@@ -87,7 +120,7 @@ public final class xmlTest {
         try {
             XMLTree xml = new XMLTree1(feedURL);
 
-            processDescription(out);
+            processThumbnail(out);
 
         } catch (Exception e) {
             out.println("Error: Could not load feed");

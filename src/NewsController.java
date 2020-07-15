@@ -37,8 +37,7 @@ public final class NewsController {
             XMLTree channel = xml.child(0);
             for (int i = 0; i < channel.numberOfChildren(); i++) {
                 if (channel.child(i).label().equals("item")) {
-                    articleTitles
-                            .add(channel.child(i).child(0).child(0).label());
+                    articleTitles.add(channel.child(i).child(0).child(0).label());
                 }
 
             }
@@ -69,15 +68,12 @@ public final class NewsController {
             for (int i = 0; i < channel.numberOfChildren(); i++) {
                 if (channel.child(i).label().equals("item")) {
                     // Second for loop to search for description tag
-                    for (int j = 0; j < channel.child(i)
-                            .numberOfChildren(); j++) {
-                        if (channel.child(i).child(j).label()
-                                .equals("description")) {
+                    for (int j = 0; j < channel.child(i).numberOfChildren(); j++) {
+                        if (channel.child(i).child(j).label().equals("description")) {
                             XMLTree description = channel.child(i).child(j);
                             // Checks if a description exists
                             if (description.numberOfChildren() > 0) {
-                                articleDescription
-                                        .add(description.child(0).label());
+                                articleDescription.add(description.child(0).label());
                             } else {
                                 articleDescription.add("No Description.");
                             }
@@ -88,6 +84,48 @@ public final class NewsController {
                 }
             }
             return articleDescription;
+
+        } catch (Exception e) {
+            out.println("Error: Could not load feed");
+            return null;
+        }
+    }
+
+    /**
+     * Processes titles from the NYTimes.
+     *
+     * @param out
+     * @return an ArrayList of article descriptions.
+     */
+    public static ArrayList<String> processThumbnail(SimpleWriter out) {
+
+        String feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml";
+        // Try and catch to see if feed is valid
+        try {
+            XMLTree xml = new XMLTree1(feedURL);
+            ArrayList<String> articleThumbnail = new ArrayList<String>();
+
+            // TODO Could this be simpler with recursion?
+            XMLTree channel = xml.child(0);
+            for (int i = 0; i < channel.numberOfChildren(); i++) {
+                if (channel.child(i).label().equals("item")) {
+                    // Second for loop to search for thumbnail media tag
+                    for (int j = 0; j < channel.child(i).numberOfChildren(); j++) {
+                        if (channel.child(i).child(j).label().equals("media:content")) {
+                            XMLTree mediaContent = channel.child(i).child(j);
+                            // Checks if a thumbnail exists
+                            if (mediaContent.hasAttribute("url")) {
+                                articleThumbnail.add(mediaContent.attributeValue("url"));
+                            } else {
+                                articleThumbnail.add("noImageAvailable.png");
+                            }
+                        }
+
+                    }
+
+                }
+            }
+            return articleThumbnail;
 
         } catch (Exception e) {
             out.println("Error: Could not load feed");
