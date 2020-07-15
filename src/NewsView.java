@@ -1,5 +1,11 @@
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,7 +28,7 @@ public final class NewsView extends JFrame {
      */
     private NewsController controller;
 
-    private static final int ROWS_PANEL_GRID = 2, COLS_PANEL_GRID = 1;
+    //private static final int ROWS_PANEL_GRID = 2, COLS_PANEL_GRID = 1;
 
     public NewsView() {
 
@@ -32,31 +38,39 @@ public final class NewsView extends JFrame {
          */
         super("The New York Times - Breaking News");
 
-        JPanel mainPanel = new JPanel(new GridLayout(0, COLS_PANEL_GRID));
+        JPanel mainPanel = new JPanel(new BorderLayout(0, 10));
+        this.add(mainPanel);
 
-        JLabel header = new JLabel("The New York Times | U.S. News");
+        //header.setBorder(new EmptyBorder(10, 0, 10, 0));
 
-        JScrollPane scroll = new JScrollPane(mainPanel);
+        // Header with NYTimes Logo
+        //BufferedImage logo = ImageIO.read(new File("nytimesLogo.png"));
+        ImageIcon nyTimesLogo = new ImageIcon("nytimesLogo.png");
+        Image scaleImage = nyTimesLogo.getImage().getScaledInstance(400, 200,
+                Image.SCALE_DEFAULT);
+        JLabel headerLogo = new JLabel(nyTimesLogo);
+        mainPanel.add(headerLogo, BorderLayout.PAGE_START);
+        headerLogo.setPreferredSize(new Dimension(600, 200));
 
-        // Adds label to window
-        mainPanel.add(header);
+        // Scroll pane and sets up scroll speed
+        JPanel scrollPanel = new JPanel(new GridLayout(0, 1));
+        mainPanel.add(scrollPanel);
 
-        // Creates panel
-
-        // Adds main panel to the main window
-        this.add(scroll);
-
-        // mainPanel.add(bRefresh);
+        JScrollPane scroll = new JScrollPane(scrollPanel);
+        scroll.getVerticalScrollBar().setUnitIncrement(8);
+        mainPanel.add(scroll);
 
         SimpleWriter out = new SimpleWriter1L();
 
         // For loop for headlines
         for (int i = 0; i < NewsController.processTitle(out).size(); i++) {
+            // TODO GET THUMBNAILS
             String title = NewsController.processTitle(out).get(i);
             String description = NewsController.processDescription(out).get(i);
-
-            mainPanel.add(new JButton(title));
-            mainPanel.add(new JLabel(description));
+            JButton articleTitle = new JButton(title);
+            articleTitle.setFont(new Font("Roboto", Font.BOLD, 14));
+            scrollPanel.add(articleTitle);
+            scrollPanel.add(new JLabel(description));
         }
 
         //scrollPanel.add(new JButton(NewsController.processFeed(out).get(i)))
@@ -66,7 +80,8 @@ public final class NewsView extends JFrame {
          * user
          */
 
-        this.setSize(1920, 1080);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setBounds(0, 0, screenSize.width, screenSize.height);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
     }
