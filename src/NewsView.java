@@ -79,7 +79,8 @@ public final class NewsView extends JFrame {
             gbc.gridheight = 2;
             gbc.weightx = 1;
             gbc.weighty = 1;
-            String thumbnailURL = NewsController.processThumbnail(out).get(i);
+            int articleTotal = NewsController.processTitle(out).size();
+            String thumbnailURL = NewsController.processThumbnail(out, articleTotal)[i];
             if (thumbnailURL.equals("noImageAvailable.png")) {
 
                 ImageIcon thumbnailImg = new ImageIcon(thumbnailURL);

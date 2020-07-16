@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import components.simplereader.SimpleReader;
 import components.simplereader.SimpleReader1L;
@@ -97,13 +98,15 @@ public final class NewsController {
      * @param out
      * @return an ArrayList of article descriptions.
      */
-    public static ArrayList<String> processThumbnail(SimpleWriter out) {
+    public static String[] processThumbnail(SimpleWriter out, int articleTotal) {
 
         String feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml";
         // Try and catch to see if feed is valid
         try {
             XMLTree xml = new XMLTree1(feedURL);
-            ArrayList<String> articleThumbnail = new ArrayList<String>();
+            String[] articleThumbnail = new String[articleTotal];
+            Arrays.fill(articleThumbnail, "noImageAvailable.png");
+            int articlePos = 0;
 
             // TODO Could this be simpler with recursion?
             XMLTree channel = xml.child(0);
@@ -115,12 +118,9 @@ public final class NewsController {
                             XMLTree mediaContent = channel.child(i).child(j);
                             // Checks if a thumbnail exists
                             if (mediaContent.hasAttribute("url")) {
-                                articleThumbnail.add(mediaContent.attributeValue("url"));
-                            } else {
-                                articleThumbnail.add("noImageAvailable.png");
+                                articleThumbnail[articlePos] = mediaContent.attributeValue("url");
                             }
-                        } else {
-                            articleThumbnail.add("noImageAvailable.png");
+                            articlePos++;
                         }
 
                     }
