@@ -90,6 +90,8 @@ public final class xmlTest {
                             } else {
                                 articleThumbnail.add("noImageAvailable.png");
                             }
+                        } else {
+                            articleThumbnail.add("noImageAvailable.png");
                         }
 
                     }

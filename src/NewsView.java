@@ -5,7 +5,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.net.URL;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -53,9 +56,10 @@ public final class NewsView extends JFrame {
         mainPanel.add(headerLogo, BorderLayout.PAGE_START);
         headerLogo.setPreferredSize(new Dimension(600, 200));
 
-        // Scroll pane and sets up scroll speed
+        // Scroll pane and organizes layout
         JPanel scrollPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
+        GridBagConstraints gbc = new GridBagConstraints();
+
         mainPanel.add(scrollPanel);
 
         JScrollPane scroll = new JScrollPane(scrollPanel);
@@ -64,22 +68,56 @@ public final class NewsView extends JFrame {
 
         SimpleWriter out = new SimpleWriter1L();
 
-        // For loop for headlines
+        // For loop for thumbnails
+        int thumbnailYPos = 0;
+        int titleYPos = 0;
+        int descYPos = 1;
         for (int i = 0; i < NewsController.processTitle(out).size(); i++) {
             // Article Thumbnail
+            gbc.gridx = 0;
+            gbc.gridy = thumbnailYPos;
+            gbc.gridheight = 2;
+            gbc.weightx = 1;
+            gbc.weighty = 1;
             String thumbnailURL = NewsController.processThumbnail(out).get(i);
-            ImageIcon thumbnailImg = new ImageIcon();
-            JLabel thumbnail = new JLabel(thumbnailImg);
-            scrollPanel.add(thumbnail);
+            if (thumbnailURL.equals("noImageAvailable.png")) {
+
+                ImageIcon thumbnailImg = new ImageIcon(thumbnailURL);
+                JLabel thumbnail = new JLabel(thumbnailImg);
+                scrollPanel.add(thumbnail, gbc);
+            } else {
+                // Gets thumbnail from urls
+                try {
+                    URL imgURL = new URL(thumbnailURL);
+                    BufferedImage thumbnailImg = ImageIO.read(imgURL);
+                    JLabel thumbnail = new JLabel(new ImageIcon(thumbnailImg));
+                    scrollPanel.add(thumbnail, gbc);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            thumbnailYPos += 2;
+
             // Article Title
+            gbc.gridx = 1;
+            gbc.gridy = titleYPos;
+            gbc.gridheight = 1;
             String title = NewsController.processTitle(out).get(i);
             JButton articleTitle = new JButton(title);
-            scrollPanel.add(articleTitle);
+            scrollPanel.add(articleTitle, gbc);
             articleTitle.setFont(new Font("Roboto", Font.BOLD, 14));
             articleTitle.setHorizontalAlignment(SwingConstants.LEFT);
+            titleYPos += 2;
+
             // Article Description
+            gbc.gridx = 1;
+            gbc.gridy = descYPos;
+            gbc.gridheight = 1;
             String description = NewsController.processDescription(out).get(i);
-            scrollPanel.add(new JLabel(description));
+            scrollPanel.add(new JLabel(description), gbc);
+            descYPos += 2;
+
         }
 
         //scrollPanel.add(new JButton(NewsController.processFeed(out).get(i)))

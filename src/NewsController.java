@@ -119,6 +119,8 @@ public final class NewsController {
                             } else {
                                 articleThumbnail.add("noImageAvailable.png");
                             }
+                        } else {
+                            articleThumbnail.add("noImageAvailable.png");
                         }
 
                     }
