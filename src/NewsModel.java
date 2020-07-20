@@ -20,12 +20,4 @@ public final class NewsModel {
         this.output = "";
     }
 
-    public void setOutput(String output) {
-        this.output = output;
-    }
-
-    public String output() {
-        return this.output;
-    }
-
 }

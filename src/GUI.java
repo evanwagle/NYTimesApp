@@ -15,9 +15,7 @@ public final class GUI {
 
         NewsModel model = new NewsModel();
         NewsView view = new NewsView();
-        NewsController controller = new NewsController(model, view);
 
-        view.registerObserver(controller);
     }
 
 }

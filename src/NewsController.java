@@ -17,10 +17,6 @@ import components.xmltree.XMLTree1;
  */
 public final class NewsController {
 
-    // Creates model and view objects
-    private final NewsModel model;
-    private final NewsView view;
-
     /**
      * Processes titles from the NYTimes.
      *
@@ -39,6 +35,35 @@ public final class NewsController {
             for (int i = 0; i < channel.numberOfChildren(); i++) {
                 if (channel.child(i).label().equals("item")) {
                     articleTitles.add(channel.child(i).child(0).child(0).label());
+                }
+
+            }
+            return articleTitles;
+
+        } catch (Exception e) {
+            out.println("Error: Could not load feed");
+            return null;
+        }
+    }
+
+    /**
+     * Processes links from the NYTimes.
+     *
+     * @param out
+     * @return an ArrayList of article links.
+     */
+    public static ArrayList<String> processLink(SimpleWriter out) {
+
+        String feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml";
+        // Try and catch to see if feed is valid
+        try {
+            XMLTree xml = new XMLTree1(feedURL);
+            ArrayList<String> articleTitles = new ArrayList<String>();
+
+            XMLTree channel = xml.child(0);
+            for (int i = 0; i < channel.numberOfChildren(); i++) {
+                if (channel.child(i).label().equals("item")) {
+                    articleTitles.add(channel.child(i).child(1).child(0).label());
                 }
 
             }
@@ -108,23 +133,26 @@ public final class NewsController {
             Arrays.fill(articleThumbnail, "noImageAvailable.png");
             int articlePos = 0;
 
-            // TODO Could this be simpler with recursion?
             XMLTree channel = xml.child(0);
             for (int i = 0; i < channel.numberOfChildren(); i++) {
                 if (channel.child(i).label().equals("item")) {
                     // Second for loop to search for thumbnail media tag
+                    boolean foundMedia = false;
                     for (int j = 0; j < channel.child(i).numberOfChildren(); j++) {
                         if (channel.child(i).child(j).label().equals("media:content")) {
                             XMLTree mediaContent = channel.child(i).child(j);
                             // Checks if a thumbnail exists
                             if (mediaContent.hasAttribute("url")) {
                                 articleThumbnail[articlePos] = mediaContent.attributeValue("url");
+                                articlePos++;
+                                foundMedia = true;
                             }
+                        }
+                        // Increases array position if at end of loop and media thumbnail still is not found
+                        else if (j == channel.child(i).numberOfChildren() - 1 && !foundMedia) {
                             articlePos++;
                         }
-
                     }
-
                 }
             }
             return articleThumbnail;
@@ -133,22 +161,6 @@ public final class NewsController {
             out.println("Error: Could not load feed");
             return null;
         }
-    }
-
-    private static void updateViewToMatchModel(NewsModel model, NewsView view) {
-
-        String output = model.output();
-        /*
-         * Update view to reflect changes in model
-         */
-    }
-
-    // Constructor which connects this class to the respecting model and view
-    public NewsController(NewsModel model, NewsView view) {
-        this.model = model;
-        this.view = view;
-
-        updateViewToMatchModel(this.model, this.view);
     }
 
     /**

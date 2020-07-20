@@ -4,7 +4,6 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 
@@ -15,7 +14,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
 
 import components.simplewriter.SimpleWriter;
 import components.simplewriter.SimpleWriter1L;
@@ -33,8 +31,6 @@ public final class NewsView extends JFrame {
      */
     private NewsController controller;
 
-    //private static final int ROWS_PANEL_GRID = 2, COLS_PANEL_GRID = 1;
-
     public NewsView() {
 
         /*
@@ -45,8 +41,6 @@ public final class NewsView extends JFrame {
 
         JPanel mainPanel = new JPanel(new BorderLayout(0, 10));
         this.add(mainPanel);
-
-        //header.setBorder(new EmptyBorder(10, 0, 10, 0));
 
         // Header with NYTimes Logo
         //BufferedImage logo = ImageIO.read(new File("nytimesLogo.png"));
@@ -60,8 +54,11 @@ public final class NewsView extends JFrame {
         JPanel scrollPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
+        // Adds panel and left and right padding
         mainPanel.add(scrollPanel);
+        //scrollPanel.setBorder(new EmptyBorder(0, 100, 0, 100));
 
+        // Creates scroll pane for vertical scroll bar and changes scroll speed
         JScrollPane scroll = new JScrollPane(scrollPanel);
         scroll.getVerticalScrollBar().setUnitIncrement(8);
         mainPanel.add(scroll);
@@ -81,8 +78,8 @@ public final class NewsView extends JFrame {
             gbc.weighty = 1;
             int articleTotal = NewsController.processTitle(out).size();
             String thumbnailURL = NewsController.processThumbnail(out, articleTotal)[i];
-            if (thumbnailURL.equals("noImageAvailable.png")) {
 
+            if (thumbnailURL.equals("noImageAvailable.png")) {
                 ImageIcon thumbnailImg = new ImageIcon(thumbnailURL);
                 JLabel thumbnail = new JLabel(thumbnailImg);
                 scrollPanel.add(thumbnail, gbc);
@@ -100,15 +97,16 @@ public final class NewsView extends JFrame {
             }
             thumbnailYPos += 2;
 
-            // Article Title
+            // Article Title as JButton with Article Link
             gbc.gridx = 1;
             gbc.gridy = titleYPos;
             gbc.gridheight = 1;
             String title = NewsController.processTitle(out).get(i);
-            JButton articleTitle = new JButton(title);
-            scrollPanel.add(articleTitle, gbc);
-            articleTitle.setFont(new Font("Roboto", Font.BOLD, 14));
-            articleTitle.setHorizontalAlignment(SwingConstants.LEFT);
+            JButton articleTitleButton = new JButton(title);
+            articleTitleButton.setFont(new Font("Roboto", Font.BOLD, 16));
+            // Linking with JButton
+            String link = NewsController.processLink(out).get(i);
+            scrollPanel.add(articleTitleButton, gbc);
             titleYPos += 2;
 
             // Article Description
@@ -116,7 +114,8 @@ public final class NewsView extends JFrame {
             gbc.gridy = descYPos;
             gbc.gridheight = 1;
             String description = NewsController.processDescription(out).get(i);
-            scrollPanel.add(new JLabel(description), gbc);
+            JLabel descText = new JLabel("<html><p>" + description + "</p></html>");
+            scrollPanel.add(descText, gbc);
             descYPos += 2;
 
         }
@@ -128,8 +127,9 @@ public final class NewsView extends JFrame {
          * user
          */
 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setBounds(0, 0, screenSize.width, screenSize.height);
+        //Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        //this.setBounds(0, 0, screenSize.width, screenSize.height);
+        this.pack();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
     }

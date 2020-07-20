@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import components.simplereader.SimpleReader;
 import components.simplereader.SimpleReader1L;
@@ -68,34 +69,39 @@ public final class xmlTest {
         out.println(articleDescription);
     }
 
-    public static void processThumbnail(SimpleWriter out) {
+    public static void processThumbnail(SimpleWriter out, int articleTotal) {
 
         String feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml";
         // Try and catch to see if feed is valid
         try {
             XMLTree xml = new XMLTree1(feedURL);
-            ArrayList<String> articleThumbnail = new ArrayList<String>();
-
-            // TODO Could this be simpler with recursion?
+            String[] articleThumbnail = new String[articleTotal];
+            Arrays.fill(articleThumbnail, "noImageAvailable.png");
+            int articlePos = 0;
+            int testCounter = 0;
             XMLTree channel = xml.child(0);
             for (int i = 0; i < channel.numberOfChildren(); i++) {
                 if (channel.child(i).label().equals("item")) {
                     // Second for loop to search for thumbnail media tag
+                    boolean foundMedia = false;
                     for (int j = 0; j < channel.child(i).numberOfChildren(); j++) {
                         if (channel.child(i).child(j).label().equals("media:content")) {
                             XMLTree mediaContent = channel.child(i).child(j);
                             // Checks if a thumbnail exists
                             if (mediaContent.hasAttribute("url")) {
-                                articleThumbnail.add(mediaContent.attributeValue("url"));
-                            } else {
-                                articleThumbnail.add("noImageAvailable.png");
+                                articleThumbnail[articlePos] = mediaContent.attributeValue("url");
+                                articlePos++;
+                                foundMedia = true;
                             }
+                        } else if (j == channel.child(i).numberOfChildren() - 1 && !foundMedia) {
+                            articlePos++;
                         }
                     }
-
                 }
             }
-            out.println(articleThumbnail);
+            for (int i = 0; i < articleTotal; i++) {
+                out.println(articleThumbnail[i]);
+            }
 
         } catch (Exception e) {
             out.println("Error: Could not load feed");
@@ -119,7 +125,7 @@ public final class xmlTest {
         try {
             XMLTree xml = new XMLTree1(feedURL);
 
-            processThumbnail(out);
+            processThumbnail(out, 58);
 
         } catch (Exception e) {
             out.println("Error: Could not load feed");
