@@ -1,13 +1,13 @@
-import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -39,28 +39,44 @@ public final class NewsView extends JFrame {
          */
         super("The New York Times - Breaking News");
 
-        JPanel mainPanel = new JPanel(new BorderLayout(0, 10));
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
+
         this.add(mainPanel);
 
         // Header with NYTimes Logo
-        //BufferedImage logo = ImageIO.read(new File("nytimesLogo.png"));
         ImageIcon nyTimesLogo = new ImageIcon("nytimesLogo.png");
-        Image scaleImage = nyTimesLogo.getImage().getScaledInstance(400, 200, Image.SCALE_DEFAULT);
         JLabel headerLogo = new JLabel(nyTimesLogo);
-        mainPanel.add(headerLogo, BorderLayout.PAGE_START);
+        // Positioning of header with gbcMain
+
+        mainPanel.add(headerLogo);
         headerLogo.setPreferredSize(new Dimension(600, 200));
 
         // Scroll pane and organizes layout
-        JPanel scrollPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
+        JPanel scrollPanel = new JPanel(new GridBagLayout());
+
+        // Adds panel for switching news source with different button categories and orders them with gbcMain
+        JPanel newsSource = new JPanel(new FlowLayout());
+
+        newsSource.add(new JButton("Home Page"));
+        newsSource.add(new JButton("World"));
+        newsSource.add(new JButton("U.S."));
+        newsSource.add(new JButton("Business"));
+        newsSource.add(new JButton("Technology"));
+        newsSource.add(new JButton("Sports"));
+        newsSource.add(new JButton("Science"));
+        newsSource.add(new JButton("Health"));
+
+        mainPanel.add(newsSource);
 
         // Adds panel and left and right padding
-        mainPanel.add(scrollPanel);
         //scrollPanel.setBorder(new EmptyBorder(0, 100, 0, 100));
 
         // Creates scroll pane for vertical scroll bar and changes scroll speed
         JScrollPane scroll = new JScrollPane(scrollPanel);
         scroll.getVerticalScrollBar().setUnitIncrement(8);
+
         mainPanel.add(scroll);
 
         SimpleWriter out = new SimpleWriter1L();
@@ -78,7 +94,7 @@ public final class NewsView extends JFrame {
             gbc.weighty = 1;
             int articleTotal = NewsController.processTitle(out).size();
             String thumbnailURL = NewsController.processThumbnail(out, articleTotal)[i];
-
+            // Displays thumbnail
             if (thumbnailURL.equals("noImageAvailable.png")) {
                 ImageIcon thumbnailImg = new ImageIcon(thumbnailURL);
                 JLabel thumbnail = new JLabel(thumbnailImg);
@@ -119,8 +135,6 @@ public final class NewsView extends JFrame {
             descYPos += 2;
 
         }
-
-        //scrollPanel.add(new JButton(NewsController.processFeed(out).get(i)))
         /*
          * Starts the app window and ensures main window is appropriately sized
          * and it exits this program when closed, and that its visible to the
