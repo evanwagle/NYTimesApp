@@ -1,12 +1,10 @@
-import java.awt.Dimension;
+import java.awt.Cursor;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.image.BufferedImage;
-import java.net.URL;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -14,9 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
-import components.simplewriter.SimpleWriter;
-import components.simplewriter.SimpleWriter1L;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 
 /**
  * View.
@@ -24,12 +21,19 @@ import components.simplewriter.SimpleWriter1L;
  * @author evanw
  *
  */
-public final class NewsView extends JFrame {
+public final class NewsView extends JFrame implements ActionListener {
 
-    /**
-     * Controller object.
-     */
-    private NewsController controller;
+    private final JButton bHome, bWorld, bUS, bBusiness, bTechnology, bSports, bScience, bHealth;
+
+    public static String feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml";
+
+    public static JPanel scrollPanel = new JPanel();
+
+    public static GridBagConstraints gbc;
+
+    public void setFeed(String feedURL) {
+        NewsView.feedURL = feedURL;
+    }
 
     public NewsView() {
 
@@ -50,113 +54,98 @@ public final class NewsView extends JFrame {
         // Positioning of header with gbcMain
 
         mainPanel.add(headerLogo);
-        headerLogo.setPreferredSize(new Dimension(600, 200));
 
         // Scroll pane and organizes layout
-        GridBagConstraints gbc = new GridBagConstraints();
-        JPanel scrollPanel = new JPanel(new GridBagLayout());
+        gbc = new GridBagConstraints();
+        scrollPanel = new JPanel(new GridBagLayout());
 
-        // Adds panel for switching news source with different button categories and orders them with gbcMain
+        // Source layout for navigating different categories
         JPanel newsSource = new JPanel(new FlowLayout());
+        // Creates buttons
+        this.bHome = new JButton("Home Page");
+        this.bWorld = new JButton("World");
+        this.bUS = new JButton("U.S.");
+        this.bBusiness = new JButton("Business");
+        this.bTechnology = new JButton("Technology");
+        this.bSports = new JButton("Sports");
+        this.bScience = new JButton("Science");
+        this.bHealth = new JButton("Health");
 
-        newsSource.add(new JButton("Home Page"));
-        newsSource.add(new JButton("World"));
-        newsSource.add(new JButton("U.S."));
-        newsSource.add(new JButton("Business"));
-        newsSource.add(new JButton("Technology"));
-        newsSource.add(new JButton("Sports"));
-        newsSource.add(new JButton("Science"));
-        newsSource.add(new JButton("Health"));
+        // Adds buttons to panel
+        newsSource.add(this.bHome);
+        newsSource.add(this.bWorld);
+        newsSource.add(this.bUS);
+        newsSource.add(this.bBusiness);
+        newsSource.add(this.bTechnology);
+        newsSource.add(this.bSports);
+        newsSource.add(this.bScience);
+        newsSource.add(this.bHealth);
+
+        // Registers action listeners
+        this.bHome.addActionListener(this);
+        this.bWorld.addActionListener(this);
+        this.bUS.addActionListener(this);
+        this.bBusiness.addActionListener(this);
+        this.bTechnology.addActionListener(this);
+        this.bSports.addActionListener(this);
+        this.bScience.addActionListener(this);
+        this.bHealth.addActionListener(this);
 
         mainPanel.add(newsSource);
 
-        // Adds panel and left and right padding
-        //scrollPanel.setBorder(new EmptyBorder(0, 100, 0, 100));
-
         // Creates scroll pane for vertical scroll bar and changes scroll speed
-        JScrollPane scroll = new JScrollPane(scrollPanel);
+        JScrollPane scroll = new JScrollPane(NewsView.scrollPanel);
         scroll.getVerticalScrollBar().setUnitIncrement(8);
-
+        NewsView.scrollPanel.setBorder(new EmptyBorder(0, 80, 0, 80));
         mainPanel.add(scroll);
 
-        SimpleWriter out = new SimpleWriter1L();
+        NewsSource.processSource();
 
-        // For loop for thumbnails
-        int thumbnailYPos = 0;
-        int titleYPos = 0;
-        int descYPos = 1;
-        for (int i = 0; i < NewsController.processTitle(out).size(); i++) {
-            // Article Thumbnail
-            gbc.gridx = 0;
-            gbc.gridy = thumbnailYPos;
-            gbc.gridheight = 2;
-            gbc.weightx = 1;
-            gbc.weighty = 1;
-            int articleTotal = NewsController.processTitle(out).size();
-            String thumbnailURL = NewsController.processThumbnail(out, articleTotal)[i];
-            // Displays thumbnail
-            if (thumbnailURL.equals("noImageAvailable.png")) {
-                ImageIcon thumbnailImg = new ImageIcon(thumbnailURL);
-                JLabel thumbnail = new JLabel(thumbnailImg);
-                scrollPanel.add(thumbnail, gbc);
-            } else {
-                // Gets thumbnail from urls
-                try {
-                    URL imgURL = new URL(thumbnailURL);
-                    BufferedImage thumbnailImg = ImageIO.read(imgURL);
-                    JLabel thumbnail = new JLabel(new ImageIcon(thumbnailImg));
-                    scrollPanel.add(thumbnail, gbc);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            thumbnailYPos += 2;
-
-            // Article Title as JButton with Article Link
-            gbc.gridx = 1;
-            gbc.gridy = titleYPos;
-            gbc.gridheight = 1;
-            String title = NewsController.processTitle(out).get(i);
-            JButton articleTitleButton = new JButton(title);
-            articleTitleButton.setFont(new Font("Roboto", Font.BOLD, 16));
-            // Linking with JButton
-            String link = NewsController.processLink(out).get(i);
-            scrollPanel.add(articleTitleButton, gbc);
-            titleYPos += 2;
-
-            // Article Description
-            gbc.gridx = 1;
-            gbc.gridy = descYPos;
-            gbc.gridheight = 1;
-            String description = NewsController.processDescription(out).get(i);
-            JLabel descText = new JLabel("<html><p>" + description + "</p></html>");
-            scrollPanel.add(descText, gbc);
-            descYPos += 2;
-
-        }
         /*
-         * Starts the app window and ensures main window is appropriately sized
-         * and it exits this program when closed, and that its visible to the
-         * user
+         * Starts app window, ensures window is sized, exits program when closed
          */
-
-        //Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        //this.setBounds(0, 0, screenSize.width, screenSize.height);
         this.pack();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
     }
 
-    /**
-     * Register argument as observer/listener of this; this must be done first,
-     * before any other methods of this class are called.
-     *
-     * @param controller
-     *            controller to register
-     */
-    public void registerObserver(NewsController controller) {
-        this.controller = controller;
+    @Override
+    public void actionPerformed(ActionEvent event) {
+        /*
+         * Set cursor to show ongoing computation
+         */
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        // Determine events occured for callback.
+        Object source = event.getSource();
+        if (source == this.bHome) {
+            this.setFeed("https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml");
+        } else if (source == this.bWorld) {
+            this.setFeed("https://rss.nytimes.com/services/xml/rss/nyt/World.xml");
+        } else if (source == this.bUS) {
+            NewsView.feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/US.xml";
+            SwingUtilities.updateComponentTreeUI(this);
+        } else if (source == this.bBusiness) {
+            NewsView.feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/Business.xml";
+            SwingUtilities.updateComponentTreeUI(this);
+        } else if (source == this.bTechnology) {
+            NewsView.feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml";
+        } else if (source == this.bSports) {
+            NewsView.feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/Sports.xml";
+        } else if (source == this.bScience) {
+            NewsView.feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/Science.xml";
+        } else if (source == this.bHealth) {
+            NewsView.feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/Health.xml";
+        }
+        // Removes current news, processes new source and reloads panel
+        NewsView.scrollPanel.removeAll();
+        NewsSource.processSource();
+        NewsView.scrollPanel.revalidate();
+        NewsView.scrollPanel.repaint();
+
+        /*
+         * Sets cursor back to normal
+         */
+        this.setCursor(Cursor.getDefaultCursor());
     }
 
 }

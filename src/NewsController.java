@@ -21,11 +21,12 @@ public final class NewsController {
      * Processes titles from the NYTimes.
      *
      * @param out
+     * @param feedURL
+     *            String for NYTimes RSS URL
      * @return an ArrayList of article titles.
      */
-    public static ArrayList<String> processTitle(SimpleWriter out) {
+    public static ArrayList<String> processTitle(SimpleWriter out, String feedURL) {
 
-        String feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml";
         // Try and catch to see if feed is valid
         try {
             XMLTree xml = new XMLTree1(feedURL);
@@ -50,11 +51,12 @@ public final class NewsController {
      * Processes links from the NYTimes.
      *
      * @param out
+     * @param feedURL
+     *            String for NYTimes RSS URL
      * @return an ArrayList of article links.
      */
-    public static ArrayList<String> processLink(SimpleWriter out) {
+    public static ArrayList<String> processLink(SimpleWriter out, String feedURL) {
 
-        String feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml";
         // Try and catch to see if feed is valid
         try {
             XMLTree xml = new XMLTree1(feedURL);
@@ -79,11 +81,12 @@ public final class NewsController {
      * Processes titles from the NYTimes.
      *
      * @param out
+     * @param feedURL
+     *            String for NYTimes RSS URL
      * @return an ArrayList of article descriptions.
      */
-    public static ArrayList<String> processDescription(SimpleWriter out) {
+    public static ArrayList<String> processDescription(SimpleWriter out, String feedURL) {
 
-        String feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml";
         // Try and catch to see if feed is valid
         try {
             XMLTree xml = new XMLTree1(feedURL);
@@ -121,11 +124,12 @@ public final class NewsController {
      * Processes titles from the NYTimes.
      *
      * @param out
+     * @param feedURL
+     *            String for NYTimes RSS URL
      * @return an ArrayList of article descriptions.
      */
-    public static String[] processThumbnail(SimpleWriter out, int articleTotal) {
+    public static String[] processThumbnail(SimpleWriter out, int articleTotal, String feedURL) {
 
-        String feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml";
         // Try and catch to see if feed is valid
         try {
             XMLTree xml = new XMLTree1(feedURL);
