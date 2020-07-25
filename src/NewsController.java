@@ -92,7 +92,6 @@ public final class NewsController {
             XMLTree xml = new XMLTree1(feedURL);
             ArrayList<String> articleDescription = new ArrayList<String>();
 
-            // TODO Could this be simpler with recursion?
             XMLTree channel = xml.child(0);
             for (int i = 0; i < channel.numberOfChildren(); i++) {
                 if (channel.child(i).label().equals("item")) {
@@ -124,12 +123,13 @@ public final class NewsController {
      * Processes titles from the NYTimes.
      *
      * @param out
+     * @param articleTotal
+     *            Total number of articles for String array length.
      * @param feedURL
      *            String for NYTimes RSS URL
      * @return an ArrayList of article descriptions.
      */
     public static String[] processThumbnail(SimpleWriter out, int articleTotal, String feedURL) {
-
         // Try and catch to see if feed is valid
         try {
             XMLTree xml = new XMLTree1(feedURL);
@@ -151,9 +151,8 @@ public final class NewsController {
                                 articlePos++;
                                 foundMedia = true;
                             }
-                        }
-                        // Increases array position if at end of loop and media thumbnail still is not found
-                        else if (j == channel.child(i).numberOfChildren() - 1 && !foundMedia) {
+                        } else if (j == channel.child(i).numberOfChildren() - 1 && !foundMedia) {
+                            // Increases array position if at end of loop and thumbnail is not found
                             articlePos++;
                         }
                     }

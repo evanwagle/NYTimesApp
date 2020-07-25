@@ -6,7 +6,6 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 
 import components.simplewriter.SimpleWriter;
@@ -31,13 +30,13 @@ public class NewsSource {
             NewsView.gbc.weighty = 1;
             int articleTotal = NewsController.processTitle(out, NewsView.feedURL).size();
             String thumbnailURL = NewsController.processThumbnail(out, articleTotal, NewsView.feedURL)[i];
-            // Displays thumbnail
+            // Displays thumbnail if there is no image available
             if (thumbnailURL.equals("noImageAvailable.png")) {
-                ImageIcon thumbnailImg = new ImageIcon(thumbnailURL);
+                ImageIcon thumbnailImg = new ImageIcon(NewsSource.class.getResource("noImageAvailable.png"));
                 JLabel thumbnail = new JLabel(thumbnailImg);
                 NewsView.scrollPanel.add(thumbnail, NewsView.gbc);
             } else {
-                // Gets thumbnail from urls
+                // Gets thumbnail from URLs
                 try {
                     URL imgURL = new URL(thumbnailURL);
                     BufferedImage thumbnailImg = ImageIO.read(imgURL);
@@ -56,9 +55,9 @@ public class NewsSource {
             NewsView.gbc.gridheight = 1;
             // Aligns left and resets insets padding
             NewsView.gbc.anchor = GridBagConstraints.WEST;
-            NewsView.gbc.insets = new Insets(0, 0, 0, 0);
+            NewsView.gbc.insets = new Insets(0, 20, 0, 0);
             String title = NewsController.processTitle(out, NewsView.feedURL).get(i);
-            JButton articleTitleButton = new JButton(title);
+            JLabel articleTitleButton = new JLabel(title);
             articleTitleButton.setFont(new Font("Roboto", Font.BOLD, 16));
             // TODO Linking with JButton
             String link = NewsController.processLink(out, NewsView.feedURL).get(i);
@@ -73,14 +72,10 @@ public class NewsSource {
             NewsView.gbc.insets = new Insets(0, 20, 0, 0);
 
             String description = NewsController.processDescription(out, NewsView.feedURL).get(i);
-            JLabel descText = new JLabel("<html><p>" + description + "</p></html>");
+            JLabel descText = new JLabel(description);
             NewsView.scrollPanel.add(descText, NewsView.gbc);
             descYPos += 2;
 
         }
-    }
-
-    public static void main(String[] args) {
-
     }
 }

@@ -4,11 +4,7 @@
  * @author evanw
  *
  */
-public final class GUI {
-
-    private GUI() {
-
-    }
+public final class NYTimesReader {
 
     public static void main(String[] args) {
 

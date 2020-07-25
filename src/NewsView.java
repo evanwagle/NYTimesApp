@@ -1,4 +1,6 @@
+import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -12,7 +14,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -22,19 +23,26 @@ import javax.swing.border.EmptyBorder;
  *
  */
 public final class NewsView extends JFrame implements ActionListener {
-
+    /**
+     * Creation of news source buttons.
+     */
     private final JButton bHome, bWorld, bUS, bBusiness, bTechnology, bSports, bScience, bHealth;
-
+    /**
+     * Class variable for feedURL to be changed.
+     */
     public static String feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml";
-
+    /**
+     * Panel where news elements are added to.
+     */
     public static JPanel scrollPanel = new JPanel();
-
+    /**
+     * Class variable for positioning news elements.
+     */
     public static GridBagConstraints gbc;
 
-    public void setFeed(String feedURL) {
-        NewsView.feedURL = feedURL;
-    }
-
+    /**
+     * Sets view of the NYTimes App.
+     */
     public NewsView() {
 
         /*
@@ -48,19 +56,23 @@ public final class NewsView extends JFrame implements ActionListener {
 
         this.add(mainPanel);
 
-        // Header with NYTimes Logo
-        ImageIcon nyTimesLogo = new ImageIcon("nytimesLogo.png");
-        JLabel headerLogo = new JLabel(nyTimesLogo);
-        // Positioning of header with gbcMain
-
-        mainPanel.add(headerLogo);
+        // NYTimes header, creates image panel, sets dimension, adds to mainPanel
+        ImageIcon img = new ImageIcon(this.getClass().getResource("nytimesLogo.png"));
+        JLabel headerLogo = new JLabel(img);
+        JPanel imagePanel = new JPanel();
+        imagePanel.setBackground(Color.white);
+        imagePanel.add(headerLogo);
+        imagePanel.setPreferredSize(new Dimension(600, 300));
+        mainPanel.add(imagePanel);
 
         // Scroll pane and organizes layout
         gbc = new GridBagConstraints();
         scrollPanel = new JPanel(new GridBagLayout());
+        scrollPanel.setBackground(Color.white);
 
         // Source layout for navigating different categories
         JPanel newsSource = new JPanel(new FlowLayout());
+        newsSource.setBackground(Color.white);
         // Creates buttons
         this.bHome = new JButton("Home Page");
         this.bWorld = new JButton("World");
@@ -112,21 +124,19 @@ public final class NewsView extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent event) {
         /*
-         * Set cursor to show ongoing computation
+         * Set cursor when feed is loading
          */
         this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        // Determine events occured for callback.
+        // Determine events occurred for callback.
         Object source = event.getSource();
         if (source == this.bHome) {
-            this.setFeed("https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml");
+            NewsView.feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml";
         } else if (source == this.bWorld) {
-            this.setFeed("https://rss.nytimes.com/services/xml/rss/nyt/World.xml");
+            NewsView.feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/World.xml";
         } else if (source == this.bUS) {
             NewsView.feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/US.xml";
-            SwingUtilities.updateComponentTreeUI(this);
         } else if (source == this.bBusiness) {
             NewsView.feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/Business.xml";
-            SwingUtilities.updateComponentTreeUI(this);
         } else if (source == this.bTechnology) {
             NewsView.feedURL = "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml";
         } else if (source == this.bSports) {
