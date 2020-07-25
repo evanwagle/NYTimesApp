@@ -17,5 +17,5 @@ More information about OSU's CSE API can be found [here](http://web.cse.ohio-sta
 <li>Download the source code</li>
 <li>Navigate to where the file is saved</li>
 <li>Unzip the file and double click the .jar file to run</li>
-<li>If the file doesn't run, open the command line and type `java -jar NYTimesReader.jar`<li>
+<li>If the file doesn't run, open the command line and type ```java -jar NYTimesReader.jar```</li>
 </ol>
